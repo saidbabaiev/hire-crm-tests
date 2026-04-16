@@ -1,42 +1,34 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
 
-test.describe('Страница авторизации (Auth)', () => {
+test.describe('Страница авторизации (Auth) - POM', () => {
 
-  // Тест 1: Успешный сценарий (Happy Path)
-  test('Успешный логин перенаправляет на защищенную страницу', async ({ page }) => {
-    await page.goto('/auth');
+    // Тест 1: Успешный сценарий (Happy Path)
+    test('Успешный логин перенаправляет на защищенную страницу', async ({ page }) => { 
+        const loginPage = new LoginPage(page);
 
-    // Заполняем правильные данные (замени на реального тестового юзера в своей БД)
-    await page.getByLabel('Email').fill('admin@example.com');
-    await page.getByLabel('Password').fill('real-password-123');
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+        await loginPage.goto();
+        await loginPage.login('tester@example.com', 'tester123');
 
-    // ПРОВЕРКА 1: Проверяем, что URL изменился
-    // Playwright сам дождется, пока роутер или сервер сделают редирект
-    await expect(page).toHaveURL('/dashboard'); // Замени на свой URL
+        // 3. Проверки (Ассерты) оставляем в самом тесте! Это важное правило POM: класс страницы делает действия, а тест делает проверки.
+        await expect(page).toHaveURL('/dashboard');
+        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    })
 
-    // ПРОВЕРКА 2: Ищем элемент, который есть ТОЛЬКО после логина
-    // Это защита от ложноположительных тестов, если URL изменился, а страница пустая
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible(); 
-  });
+    // Тест 2: Негативный сценарий (Negative Path)
+    test('Показ ошибки при вводе неверных данных', async ({ page }) => {
+        const loginPage = new LoginPage(page);
 
-  // Тест 2: Негативный сценарий (Negative Path)
-  test('Показ ошибки при вводе неверных данных', async ({ page }) => {
-    await page.goto('/auth');
+        await loginPage.goto();
+        await loginPage.login('fake-user@example.com', 'wrongpassword');
 
-    // Вводим заведомо неверные данные
-    await page.getByLabel('Email').fill('fake@example.com');
-    await page.getByLabel('Password').fill('wrongpassword');
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+        // ПРОВЕРКА: Убеждаемся, что URL НЕ изменился
+        await expect(page).toHaveURL('/auth');
 
-    // ПРОВЕРКА: Убеждаемся, что URL НЕ изменился
-    await expect(page).toHaveURL('/auth');
-
-    // ПРОВЕРКА: Ищем текст ошибки от бэкенда
-    const errorMessage = page.getByText('Invalid credentials'); // Замени на реальный текст твоей ошибки
-    await expect(errorMessage).toBeVisible();
-  });
-
+        // ПРОВЕРКА: Ищем текст ошибки от бэкенда
+        const errorMessage = page.getByText('Invalid credentials');
+        await expect(errorMessage).toBeVisible();
+    });
 
 
     // Тест 3: Мокирование Supabase (Имитация падения сервера)
@@ -58,11 +50,10 @@ test.describe('Страница авторизации (Auth)', () => {
       });
     });
 
-    // 2. Идем на страницу и пробуем залогиниться
-    await page.goto('/auth');
-    await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    const loginPage = new LoginPage(page);
+
+    await loginPage.goto();
+    await loginPage.login('tester@example.com', 'tester123');
 
     // 3. ПРОВЕРКА: Ищем тост с нашей искусственной ошибкой
     // Поскольку тост появляется динамически, Playwright будет ждать его появления (Auto-waiting)
