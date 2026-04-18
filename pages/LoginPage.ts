@@ -19,7 +19,7 @@ export class LoginPage {
         await this.page.goto('/auth');
     }
 
-    // Бизнес-действие: Залогиниться
+    // Business action: Login
     async login(email: string, password: string) {
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);

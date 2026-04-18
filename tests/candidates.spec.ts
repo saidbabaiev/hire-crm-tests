@@ -3,7 +3,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { CandidatesPage } from '../pages/CandidatesPage'
 
 test.describe('Candidates Page', () => {
-    // Этот блок выполнится ПЕРЕД каждым тестом в этом файле
+    // This block will execute BEFORE each test in this file
     test.beforeEach(async ({ page }) => {
         const loginPage = new LoginPage(page);
 
@@ -19,13 +19,10 @@ test.describe('Candidates Page', () => {
 
         // Go to the candidates page
         await candidatesPage.goto();
-
-        // Check is candidates page loaded
-        await expect(candidatesPage.header).toBeVisible();
+        await expect(candidatesPage.header).toBeVisible(); // Check is candidates page loaded
 
         // Open add candidate form
         await candidatesPage.openAddCandidateForm();
-
         await expect(candidatesPage.drawerHeader).toBeVisible();
 
         await candidatesPage.fillBasicInfo('John', 'Doe', 'johndoe@example.com');
@@ -33,5 +30,24 @@ test.describe('Candidates Page', () => {
         await expect(candidatesPage.firstNameInput).toHaveValue('John');
         await expect(candidatesPage.emailInput).toHaveValue('johndoe@example.com');
 
-    })
+        await candidatesPage.selectDropdownOption('Work Type', 'Remote');
+        await candidatesPage.selectDropdownOption('Visa Status', 'Work Visa');
+
+        const workTypeCombobox = candidatesPage.getComboboxLocator('Work Type');
+        await expect(workTypeCombobox).toHaveText('Remote');
+
+        const visaStatusCombobox = candidatesPage.getComboboxLocator('Visa Status');
+        await expect(visaStatusCombobox).toHaveText('Work Visa');
+
+        await candidatesPage.saveBtn.click();
+
+        const successToast = page.getByText('Success', { exact: true });
+        await expect(successToast).toBeVisible();
+
+        await expect(page).toHaveURL(/\/candidates\/.+/);
+
+        const backToBtn = page.getByRole('button', { name: 'Back to Candidates' });
+        await expect(backToBtn).toBeVisible();
+    });
+
 })

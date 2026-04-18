@@ -8,7 +8,7 @@ export class CandidatesPage {
     readonly addCandidateBtn: Locator;
     readonly searchInput: Locator;
 
-    // --- Боковое окно (Drawer) добавления кандидата ---
+    // --- Drawer for adding a candidate ---
     readonly drawerHeader: Locator;
     readonly firstNameInput: Locator;
     readonly lastNameInput: Locator;
@@ -45,5 +45,20 @@ export class CandidatesPage {
         await this.firstNameInput.fill(firstName);
         await this.lastNameInput.fill(lastName);
         await this.emailInput.fill(email);
+    }
+
+    getComboboxLocator(labelName: string) {
+        return this.page.getByText(labelName, { exact: true })
+            .locator('..') // step to parent container
+            .getByRole('combobox')
+    }
+
+    // Universal function for shadcn select
+    async selectDropdownOption(labelName: string, optionText: string) {
+        const combobox = this.getComboboxLocator(labelName);
+        await combobox.click();
+
+        const option = this.page.getByRole('option', { name: optionText, exact: true });
+        await option.click();
     }
 }
