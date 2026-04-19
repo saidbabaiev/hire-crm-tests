@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 
-test.describe('Authorization Page (Auth) - POM', () => {
+test.describe('Authorization Page (Login)', () => {
 
     // Test 1: Successful scenario (Happy Path)
     test('Successful login redirects to protected page', async ({ page }) => {
@@ -20,13 +20,27 @@ test.describe('Authorization Page (Auth) - POM', () => {
         const loginPage = new LoginPage(page);
 
         await loginPage.goto();
+        await loginPage.login('fake-user2@example.com', 'wrongpassword2');
+
+        // CHECK: Make sure the URL DIDN'T change
+        await expect(page).toHaveURL('/auth');
+
+        // CHECK: Looking for error text from backend
+        const errorMessage = page.getByText('Invalid login credentials');
+        await expect(errorMessage).toBeVisible();
+    });
+
+    test('Check email not confirmed', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+
+        await loginPage.goto();
         await loginPage.login('fake-user@example.com', 'wrongpassword');
 
         // CHECK: Make sure the URL DIDN'T change
         await expect(page).toHaveURL('/auth');
 
         // CHECK: Looking for error text from backend
-        const errorMessage = page.getByText('Invalid credentials');
+        const errorMessage = page.getByText('Email not confirmed');
         await expect(errorMessage).toBeVisible();
     });
 

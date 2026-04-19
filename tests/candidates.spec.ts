@@ -13,7 +13,6 @@ test.describe('Candidates Page', () => {
         await expect(page).toHaveURL(/dashboard|candidates/);
     });
 
-
     test('Successfully open Add candidate form', async ({ page }) => {
         const candidatesPage = new CandidatesPage(page);
 
