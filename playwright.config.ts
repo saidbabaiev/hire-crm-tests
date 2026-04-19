@@ -37,20 +37,44 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // 1. Проект настройки авторизации
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    // 2. Тесты, которые НЕ требуют авторизации (например, страница логина/регистрации)
+    {
+      name: 'auth-tests',
+      testDir: './tests', // или где лежат твои auth-тесты
+      testMatch: /auth\.spec\.ts|signup\.spec\.ts|login\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
-
+    // 3. Главный проект для всех остальных тестов (использует сохраненную сессию)
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'chromium',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Говорим браузеру подтягивать файл с сессией
+        storageState: 'playwright/.auth/user.json',
+      },
+      // Этот проект запустится только ПОСЛЕ успешного выполнения проекта 'setup'
+      dependencies: ['setup'],
+      testIgnore: /.*(auth|signup|login)\.spec\.ts/, // Игнорируем тесты авторизации
     },
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {

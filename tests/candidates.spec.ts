@@ -1,18 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
 import { CandidatesPage } from '../pages/CandidatesPage'
 
 test.describe('Candidates Page', () => {
-    // This block will execute BEFORE each test in this file
-    test.beforeEach(async ({ page }) => {
-        const loginPage = new LoginPage(page);
-
-        await loginPage.goto();
-        await loginPage.login('tester@example.com', 'tester123');
-
-        await expect(page).toHaveURL(/dashboard|candidates/);
-    });
-
+ 
     test('Successfully open Add candidate form', async ({ page }) => {
         const candidatesPage = new CandidatesPage(page);
 

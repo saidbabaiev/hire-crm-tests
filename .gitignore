@@ -8,3 +8,7 @@ node_modules/
 /playwright/.auth/
 
 .env
+.env.local
+
+playwright/.auth/user.json
+.auth/user.json
