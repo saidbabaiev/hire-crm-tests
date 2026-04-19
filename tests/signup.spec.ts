@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { SignUpPage } from '../pages/SignupPage';
 import { validationTests } from '../test-data/signup.data';
+import { getRequiredEnv } from '../utils/env';
 
 test.describe('Authorization Page (Sign Up)', () => {
 
@@ -35,8 +36,16 @@ test.describe('Authorization Page (Sign Up)', () => {
 
         const signUpPage = new SignUpPage(page);
         await signUpPage.goto();
+
+        const email = getRequiredEnv('TEST_USER_EMAIL');
+        const password = getRequiredEnv('TEST_USER_PASSWORD');
     
-        await signUpPage.signup('Existing User', 'Acme Corp', 'tester@example.com', 'password123');
+        await signUpPage.signup(
+            'Existing User',
+            'Acme Corp',
+            email,
+            password
+        );
 
         const successToast = page.getByText('Account created successfully! Please check your email to verify your account.');
         await expect(successToast).not.toBeVisible();

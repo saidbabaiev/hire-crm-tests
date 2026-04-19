@@ -61,19 +61,26 @@ export default defineConfig({
       dependencies: ['setup'],
       testIgnore: /.*(auth|signup|login)\.spec\.ts/, // Игнорируем тесты авторизации
     },
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
-
+    
     // {
     //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
+    //   use: { 
+    //     ...devices['Desktop Firefox'],
+    //     storageState: 'playwright/.auth/user.json', // Берем токен
+    //   },
+    //   dependencies: ['setup'], // Ждем авторизацию
+    //   testIgnore: /.*(auth|signup|login)\.spec\.ts/,
     // },
 
+    // 5. Защищенные тесты в WEBKIT (Safari)
     // {
     //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
+    //   use: { 
+    //     ...devices['Desktop Safari'],
+    //     storageState: 'playwright/.auth/user.json', // Берем токен
+    //   },
+    //   dependencies: ['setup'], // Ждем авторизацию
+    //   testIgnore: /.*(auth|signup|login)\.spec\.ts/,
     // },
 
     /* Test against mobile viewports. */

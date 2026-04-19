@@ -1,14 +1,19 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import { getRequiredEnv } from '../utils/env';
+
 
 test.describe('Authorization Page (Login)', () => {
 
     // Test 1: Successful scenario (Happy Path)
     test('Successful login redirects to protected page', async ({ page }) => {
         const loginPage = new LoginPage(page);
-
         await loginPage.goto();
-        await loginPage.login('tester@example.com', 'tester123');
+
+        const email = getRequiredEnv('TEST_USER_EMAIL');
+        const password = getRequiredEnv('TEST_USER_PASSWORD');
+
+        await loginPage.login(email, password);
 
         // 3. Checks (Asserts) we leave in the test! This is an important POM rule: the page class performs actions, and the test performs checks.
         await expect(page).toHaveURL('/dashboard');
@@ -66,7 +71,11 @@ test.describe('Authorization Page (Login)', () => {
         const loginPage = new LoginPage(page);
 
         await loginPage.goto();
-        await loginPage.login('tester@example.com', 'tester123');
+
+        const email = getRequiredEnv('TEST_USER_EMAIL');
+        const password = getRequiredEnv('TEST_USER_PASSWORD');
+
+        await loginPage.login(email, password);
 
         // 3. CHECK: Looking for toast with our artificial error
         // Since the toast appears dynamically, Playwright will wait for it to appear (Auto-waiting)
